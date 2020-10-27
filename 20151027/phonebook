@@ -1,0 +1,131 @@
+package example04;
+
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
+
+
+/*
+ * 키보드로 이름, 전화, 나이를 입력받아서 Person 객체를 생성하여 파일로 출력하는 프로그램
+ * [입력형식]
+ * [1]등록
+ * [2]전체보기(화면출력)
+ * [3]종료
+ * [4]문서읽기
+ * 메뉴선택[1~3]?
+ * 
+ * [1]선택시
+ * 등록 : 홍길동,010-1111-2222, 28
+ * 
+ * [2]선택시
+ * 이름 전화 나이
+ * .   .   .
+ * 
+ * [3]
+ * 
+ */
+public class Exam_05 {
+	public static void main(String[] args) { 
+		Scanner scn = new Scanner(System.in);
+		int sw = 0;
+		int cnt = 0;
+		String name;
+		String phonenum;
+		int age;
+		List<Person> imsilist = new ArrayList<Person>();
+
+		while(true) {
+			boolean power = false;
+			System.out.println("[0] 문서읽기");
+			System.out.println("[1] 등록");
+			System.out.println("[2] 전체보기(화면출력)");
+			System.out.println("[3] 종료");
+			sw = scn.nextInt();
+
+			switch(sw) {
+			case 0:
+				File f = new File("c:\\data\\phonebook");
+				try {
+				FileInputStream fis = new FileInputStream(f);
+				BufferedInputStream bis = new BufferedInputStream(fis);
+				ObjectInputStream ois = new ObjectInputStream(bis);
+				
+				Object obj = ois.readObject();
+				Person p = (Person)obj;
+				System.out.println(p);
+				ois.close();
+				}catch(FileNotFoundException fnfe) {
+					fnfe.printStackTrace();
+				}catch(ClassNotFoundException cnfe) {
+					cnfe.printStackTrace();
+				}catch(IOException ioex) {
+					ioex.printStackTrace();
+				}finally{
+					
+					
+					
+				}
+				break;
+			case 1:
+				System.out.println("[1]+\n등록 : ");
+
+				name = scn.next();
+				phonenum = scn.next();
+				age = scn.nextInt();
+				imsilist.add(new Person(name,phonenum,age));
+
+
+				cnt++;
+				break;
+			case 2:
+				for(int i = 0; i<imsilist.size(); i++) {
+					System.out.println(imsilist.get(i));
+				}
+				break;
+			case 3:
+				File f = new File("c:\\data\\phonebook.txt");
+				if(!f.exists()) {//filenotfoundexcep,ioeException
+					try {
+						FileOutputStream fis = new FileOutputStream(f);
+						BufferedOutputStream bops = new BufferedOutputStream(fis);
+						ObjectOutputStream oos = new ObjectOutputStream(bops);
+						oos.writeObject(imsilist);
+						oos.close();
+					}catch(FileNotFoundException fnfe) {
+						fnfe.printStackTrace();
+					}catch(IOException ioex) {
+						ioex.printStackTrace();
+					};
+				}else {//존재하면
+					try {
+						FileOutputStream fis = new FileOutputStream(f,true);
+						BufferedOutputStream bops = new BufferedOutputStream(fis);
+						ObjectOutputStream oos = new ObjectOutputStream(bops);
+						oos.writeObject(imsilist);
+						oos.close();
+					}catch(FileNotFoundException fnfe) {
+						fnfe.printStackTrace();
+					}catch(IOException ioex) {
+						ioex.printStackTrace();
+					};
+				}
+				power = true;
+				break;
+			
+			}
+			if(power) {
+				break;
+			}
+		}
+	}
+
+}
